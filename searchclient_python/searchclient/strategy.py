@@ -75,22 +75,27 @@ class StrategyBFS(Strategy):
 class StrategyDFS(Strategy):
     def __init__(self):
         super().__init__()
-        raise NotImplementedError
+        self.frontier = deque()
+        self.frontier_set = set()
+        
     
     def get_and_remove_leaf(self) -> 'State':
-        raise NotImplementedError
+        leaf = self.frontier.pop()
+        self.frontier_set.remove(leaf)
+        return leaf
     
     def add_to_frontier(self, state: 'State'):
-        raise NotImplementedError
+        self.frontier.append(state)
+        self.frontier_set.add(state)
     
     def in_frontier(self, state: 'State') -> 'bool':
-        raise NotImplementedError
+        return state in self.frontier_set
     
     def frontier_count(self) -> 'int':
-        raise NotImplementedError
+        return len(self.frontier)
     
     def frontier_empty(self) -> 'bool':
-        raise NotImplementedError
+        return len(self.frontier) == 0
     
     def __repr__(self):
         return 'Depth-first Search'
