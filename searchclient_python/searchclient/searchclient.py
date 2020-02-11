@@ -21,23 +21,23 @@ class SearchClient:
                 sys.exit(1)
             
             # set walls before intialize states
-            #row = 0
-            #column=0
-            #while line:
-            #    for col, char in enumerate(line):
-            #        pass
-            #    row += 1
-            #    line = server_messages.readline().rstrip()
-            #column=col
-            #self.MAX_ROW=row
-            #self.MAX_COL=column
+            row = 0
+            column=0
+            while line:
+                for col, char in enumerate(line):
+                    pass
+                row += 1
+                line = server_messages.readline().rstrip()
+            column=col
+            self.MAX_ROW=row
+            self.MAX_COL=column
             self.walls = [[False for _ in range(70)] for _ in range(70)]
-            #print(row,column,file=sys.stderr, flush=True)  
+            print(row,column,file=sys.stderr, flush=True)  
 
 
             # Read lines for level.
-           # self.initial_state = State(row,column)
-            self.initial_state = State()
+            self.initial_state = State(row,column)
+            #self.initial_state = State()
             row = 0
             while line:
                 for col, char in enumerate(line):
