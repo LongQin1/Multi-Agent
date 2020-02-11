@@ -5,9 +5,9 @@ from action import ALL_ACTIONS, ActionType
 
 class State:
     _RNG = random.Random(1)
-#    MAX_ROW=70
-#    MAX_COL=70
-    def __init__(self, r: 'int', c:'int', copy: 'State' = None):
+    MAX_ROW = 0
+    MAX_COL = 0
+    def __init__(self,row,col, copy: 'State' = None):
         #r: 'int', c:'int',
         '''
         If copy is None: Creates an empty State.
@@ -26,15 +26,15 @@ class State:
         Note: The state should be considered immutable after it has been hashed, e.g. added to a dictionary!
         '''
         self._hash = None
-        State.MAX_ROW=r
-        State.MAX_COL=c
+        self.MAX_ROW = row
+        self.MAX_COL = col
         if copy is None:
             self.agent_row = None
             self.agent_col = None
             
         #   self.walls = [[False for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
-            self.boxes = [[None for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
-            self.goals = [[None for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
+            self.boxes = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
+            self.goals = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
             
             self.parent = None
             self.action = None
@@ -52,7 +52,8 @@ class State:
             self.action = copy.action
             
             self.g = copy.g
-    
+        print(self.MAX_ROW, self.MAX_COL, file=sys.stderr, flush=True)
+
     def get_children(self,walls) -> '[State, ...]':
         '''
         Returns a list of child states attained from applying every applicable action in the current state.
@@ -66,7 +67,7 @@ class State:
             
             if action.action_type is ActionType.Move:
                 if self.is_free(walls,new_agent_row, new_agent_col):
-                    child = State(self.MAX_ROW,self.MAX_COL,self)
+                    child = State(self,self.MAX_ROW,self.MAX_COL)
                     child.agent_row = new_agent_row
                     child.agent_col = new_agent_col
                     child.parent = self
@@ -78,7 +79,7 @@ class State:
                     new_box_row = new_agent_row + action.box_dir.d_row
                     new_box_col = new_agent_col + action.box_dir.d_col
                     if self.is_free(walls,new_box_row, new_box_col):
-                        child = State(self.MAX_ROW,self.MAX_COL,self)
+                        child = State(self,self.MAX_ROW,self.MAX_COL)
                         child.agent_row = new_agent_row
                         child.agent_col = new_agent_col
                         child.boxes[new_box_row][new_box_col] = self.boxes[new_agent_row][new_agent_col]
@@ -92,7 +93,7 @@ class State:
                     box_row = self.agent_row + action.box_dir.d_row
                     box_col = self.agent_col + action.box_dir.d_col
                     if self.box_at(box_row, box_col):
-                        child = State(self.MAX_ROW,self.MAX_COL,self)
+                        child = State(self,self.MAX_ROW,self.MAX_COL)
                         child.agent_row = new_agent_row
                         child.agent_col = new_agent_col
                         child.boxes[self.agent_row][self.agent_col] = self.boxes[box_row][box_col]
