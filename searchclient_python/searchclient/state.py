@@ -1,14 +1,14 @@
 import random
-
+import sys
 from action import ALL_ACTIONS, ActionType
 
 
 class State:
     _RNG = random.Random(1)
-    MAX_ROW = 70
-    MAX_COL = 70
-    
-    def __init__(self, copy: 'State' = None):
+    MAX_ROW=70
+    MAX_COL=70
+    def __init__(self,  copy: 'State' = None):
+        #r: 'int', c:'int',
         '''
         If copy is None: Creates an empty State.
         If copy is not None: Creates a copy of the copy state.
@@ -26,11 +26,13 @@ class State:
         Note: The state should be considered immutable after it has been hashed, e.g. added to a dictionary!
         '''
         self._hash = None
+        #State.MAX_ROW=r
+        #State.MAX_COL=c
         if copy is None:
             self.agent_row = None
             self.agent_col = None
             
-            self.walls = [[False for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
+        #   self.walls = [[False for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
             self.boxes = [[None for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
             self.goals = [[None for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
             
@@ -42,7 +44,7 @@ class State:
             self.agent_row = copy.agent_row
             self.agent_col = copy.agent_col
             
-            self.walls = [row[:] for row in copy.walls]
+         #  self.walls = [row[:] for row in copy.walls]
             self.boxes = [row[:] for row in copy.boxes]
             self.goals = [row[:] for row in copy.goals]
             
@@ -51,7 +53,7 @@ class State:
             
             self.g = copy.g
     
-    def get_children(self) -> '[State, ...]':
+    def get_children(self,walls) -> '[State, ...]':
         '''
         Returns a list of child states attained from applying every applicable action in the current state.
         The order of the actions is random.
@@ -63,7 +65,7 @@ class State:
             new_agent_col = self.agent_col + action.agent_dir.d_col
             
             if action.action_type is ActionType.Move:
-                if self.is_free(new_agent_row, new_agent_col):
+                if self.is_free(walls,new_agent_row, new_agent_col):
                     child = State(self)
                     child.agent_row = new_agent_row
                     child.agent_col = new_agent_col
@@ -75,7 +77,7 @@ class State:
                 if self.box_at(new_agent_row, new_agent_col):
                     new_box_row = new_agent_row + action.box_dir.d_row
                     new_box_col = new_agent_col + action.box_dir.d_col
-                    if self.is_free(new_box_row, new_box_col):
+                    if self.is_free(walls,new_box_row, new_box_col):
                         child = State(self)
                         child.agent_row = new_agent_row
                         child.agent_col = new_agent_col
@@ -86,7 +88,7 @@ class State:
                         child.g += 1
                         children.append(child)
             elif action.action_type is ActionType.Pull:
-                if self.is_free(new_agent_row, new_agent_col):
+                if self.is_free(walls,new_agent_row, new_agent_col):
                     box_row = self.agent_row + action.box_dir.d_row
                     box_col = self.agent_col + action.box_dir.d_col
                     if self.box_at(box_row, box_col):
@@ -115,8 +117,8 @@ class State:
                     return False
         return True
     
-    def is_free(self, row: 'int', col: 'int') -> 'bool':
-        return not self.walls[row][col] and self.boxes[row][col] is None
+    def is_free(self,walls:'[int][int]', row: 'int', col: 'int') -> 'bool':
+        return not walls[row][col] and self.boxes[row][col] is None
     
     def box_at(self, row: 'int', col: 'int') -> 'bool':
         return self.boxes[row][col] is not None
@@ -138,7 +140,7 @@ class State:
             _hash = _hash * prime + self.agent_col
             _hash = _hash * prime + hash(tuple(tuple(row) for row in self.boxes))
             _hash = _hash * prime + hash(tuple(tuple(row) for row in self.goals))
-            _hash = _hash * prime + hash(tuple(tuple(row) for row in self.walls))
+            #_hash = _hash * prime + hash(tuple(tuple(row) for row in self.walls))
             self._hash = _hash
         return self._hash
     
@@ -149,7 +151,7 @@ class State:
         if self.agent_col != other.agent_col: return False
         if self.boxes != other.boxes: return False
         if self.goals != other.goals: return False
-        if self.walls != other.walls: return False
+        'if self.walls != other.walls: return False'
         return True
     
     def __repr__(self):
@@ -159,7 +161,7 @@ class State:
             for col in range(State.MAX_COL):
                 if self.boxes[row][col] is not None: line.append(self.boxes[row][col])
                 elif self.goals[row][col] is not None: line.append(self.goals[row][col])
-                elif self.walls[row][col] is not None: line.append('+')
+                #elif self.walls[row][col] is not None: line.append('+')
                 elif self.agent_row == row and self.agent_col == col: line.append('0')
                 else: line.append(' ')
             lines.append(''.join(line))

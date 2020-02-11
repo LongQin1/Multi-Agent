@@ -20,12 +20,28 @@ class SearchClient:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
                 sys.exit(1)
             
+            # set walls before intialize states
+            #row = 0
+            #column=0
+            #while line:
+            #    for col, char in enumerate(line):
+            #        pass
+            #    row += 1
+            #    line = server_messages.readline().rstrip()
+            #column=col
+            #self.MAX_ROW=row
+            #self.MAX_COL=column
+            self.walls = [[False for _ in range(70)] for _ in range(70)]
+            #print(row,column,file=sys.stderr, flush=True)  
+
+
             # Read lines for level.
+           # self.initial_state = State(row,column)
             self.initial_state = State()
             row = 0
             while line:
                 for col, char in enumerate(line):
-                    if char == '+': self.initial_state.walls[row][col] = True
+                    if char == '+': self.walls[row][col] = True
                     elif char in "0123456789":
                         if self.initial_state.agent_row is not None:
                             print('Error, encountered a second agent (client only supports one agent).', file=sys.stderr, flush=True)
@@ -42,6 +58,12 @@ class SearchClient:
                         sys.exit(1)
                 row += 1
                 line = server_messages.readline().rstrip()
+           
+            
+            # after while before except we gonna intialized the table(max_col and max_row) here 
+            # also save the state walls and goals here.
+             
+ 
         except Exception as ex:
             print('Error parsing level: {}.'.format(repr(ex)), file=sys.stderr, flush=True)
             sys.exit(1)
@@ -69,7 +91,7 @@ class SearchClient:
                 return leaf.extract_plan()
             
             strategy.add_to_explored(leaf)
-            for child_state in leaf.get_children(): # The list of expanded states is shuffled randomly; see state.py.
+            for child_state in leaf.get_children(self.walls): # The list of expanded states is shuffled randomly; see state.py.
                 if not strategy.is_explored(child_state) and not strategy.in_frontier(child_state):
                     strategy.add_to_frontier(child_state)
             
