@@ -22,7 +22,7 @@ class SearchClient:
                 line = server_messages.readline().rstrip()
 
                 for col, char in enumerate(line):
-                    print(col,char, file=sys.stderr, flush=True)
+                   pass
 
                 row+=1
             if colors_re.fullmatch(line) is not None:
@@ -30,18 +30,18 @@ class SearchClient:
                 sys.exit(1)
             
             # set walls before intialize states
-            self.walls=[[False for _ in range(row)] for _ in range(col)]
-            for row in self.walls:
-                print(row, file=sys.stderr, flush=True)
+            self.walls=[[False for _ in range(col+1)] for _ in range(row)] #as it is in original state
+
             # Read lines for level.
-            self.initial_state = State(row,col)
-            #self.initial_state = State()
+            self.initial_state = State(row,col+1)
+            print("inital state is made", file=sys.stderr, flush=True)
+            
             row = 0
-            print(line_list, file=sys.stderr, flush=True)
+
             for line in line_list:
                 for col, char in enumerate(line):
-                    print(row,col, file=sys.stderr, flush=True)
-                    if char == '+': self.walls[col][row] = True
+                    if char == '+':
+                        self.walls[row][col] = True
 
                     elif char in "0123456789":
                         if self.initial_state.agent_row is not None:
@@ -73,9 +73,9 @@ class SearchClient:
 
         print('Starting search with strategy {}.'.format(strategy), file=sys.stderr, flush=True)
         print(self.initial_state.agent_row, self.initial_state.agent_col, file=sys.stderr, flush=True)
-
+        
         strategy.add_to_frontier(self.initial_state)
-
+    
         iterations = 0
         while True:
 
@@ -91,6 +91,7 @@ class SearchClient:
                 return None
             
             leaf = strategy.get_and_remove_leaf()
+            
             
             if leaf.is_goal_state():
                 return leaf.extract_plan()
