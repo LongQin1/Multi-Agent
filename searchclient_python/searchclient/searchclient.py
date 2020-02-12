@@ -17,31 +17,33 @@ class SearchClient:
             line = server_messages.readline().rstrip()
             line_list = []
             row=0
+            column=0
             while line:
                 line_list.append(line)
                 line = server_messages.readline().rstrip()
 
                 for col, char in enumerate(line):
                    pass
-
+                if col>column:
+                    column=col
                 row+=1
             if colors_re.fullmatch(line) is not None:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
                 sys.exit(1)
             
             # set walls before intialize states
-            self.walls=[[False for _ in range(col+1)] for _ in range(row)] #as it is in original state
-            self.goals = [[None for _ in range(col+1)] for _ in range(row)]
+            self.walls=[[False for _ in range(column+1)] for _ in range(row)] #as it is in original state
+            self.goals = [[None for _ in range(column+1)] for _ in range(row)]
 
             # Read lines for level.
-            self.initial_state = State(row,col+1)
+            self.initial_state = State(row,column+1)
             print("inital state is made", file=sys.stderr, flush=True)
             
             row = 0
 
             for line in line_list:
                 for col, char in enumerate(line):
-                    if char == '+':
+                    if char == "+":
                         self.walls[row][col] = True
 
                     elif char in "0123456789":
@@ -143,7 +145,9 @@ def main(strategy_str: 'str'):
         
         for state in solution:
             print(state.action, flush=True)
+            print('before response', file=sys.stderr, flush=True)
             response = server_messages.readline().rstrip()
+            print('after response', file=sys.stderr, flush=True)
             if 'false' in response:
                 print('Server responsed with "{}" to the action "{}" applied in:\n{}\n'.format(response, state.action, state), file=sys.stderr, flush=True)
                 break
