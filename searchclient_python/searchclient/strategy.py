@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from collections import deque
 from time import perf_counter
-
+import sys
 import memory
 
 
@@ -87,6 +87,7 @@ class StrategyDFS(Strategy):
     def add_to_frontier(self, state: 'State'):
         self.frontier.append(state)
         self.frontier_set.add(state)
+        print("through", )
     
     def in_frontier(self, state: 'State') -> 'bool':
         return state in self.frontier_set

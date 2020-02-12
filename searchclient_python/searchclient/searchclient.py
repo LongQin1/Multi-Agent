@@ -10,46 +10,49 @@ from heuristic import AStar, WAStar, Greedy
 
 class SearchClient:
     def __init__(self, server_messages):
-        self.initial_state = None
-        
+
         colors_re = re.compile(r'^[a-z]+:\s*[0-9A-Z](\s*,\s*[0-9A-Z])*\s*$')
         try:
             # Read lines for colors. There should be none of these in warmup levels.
             line = server_messages.readline().rstrip()
+            line_list = []
+            row=0
+            while line:
+                line_list.append(line)
+                line = server_messages.readline().rstrip()
+
+                for col, char in enumerate(line):
+                   pass
+
+                row+=1
             if colors_re.fullmatch(line) is not None:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
                 sys.exit(1)
             
             # set walls before intialize states
-            #row = 0
-            #column=0
-            #while line:
-            #    for col, char in enumerate(line):
-            #        pass
-            #    row += 1
-            #    line = server_messages.readline().rstrip()
-            #column=col
-            #self.MAX_ROW=row
-            #self.MAX_COL=column
-            self.walls = [[False for _ in range(70)] for _ in range(70)]
-            #print(row,column,file=sys.stderr, flush=True)  
-
+            self.walls=[[False for _ in range(col+1)] for _ in range(row)] #as it is in original state
+            self.goals = [[None for _ in range(col+1)] for _ in range(row)]
 
             # Read lines for level.
-           # self.initial_state = State(row,column)
-            self.initial_state = State()
+            self.initial_state = State(row,col+1)
+            print("inital state is made", file=sys.stderr, flush=True)
+            
             row = 0
-            while line:
+
+            for line in line_list:
                 for col, char in enumerate(line):
-                    if char == '+': self.walls[row][col] = True
+                    if char == '+':
+                        self.walls[row][col] = True
+
                     elif char in "0123456789":
                         if self.initial_state.agent_row is not None:
                             print('Error, encountered a second agent (client only supports one agent).', file=sys.stderr, flush=True)
                             sys.exit(1)
                         self.initial_state.agent_row = row
                         self.initial_state.agent_col = col
+
                     elif char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ": self.initial_state.boxes[row][col] = char
-                    elif char in "abcdefghijklmnopqrstuvwxyz": self.initial_state.goals[row][col] = char
+                    elif char in "abcdefghijklmnopqrstuvwxyz": self.goals[row][col] = char
                     elif char == ' ':
                         # Free cell.
                         pass
@@ -57,10 +60,9 @@ class SearchClient:
                         print('Error, read invalid level character: {}'.format(char), file=sys.stderr, flush=True)
                         sys.exit(1)
                 row += 1
-                line = server_messages.readline().rstrip()
-           
-            
-            # after while before except we gonna intialized the table(max_col and max_row) here 
+                #print(self.walls, file=sys.stderr, flush=True)
+
+            # after while before except we gonna intialized the table(max_col and max_row) here
             # also save the state walls and goals here.
              
  
@@ -69,11 +71,15 @@ class SearchClient:
             sys.exit(1)
     
     def search(self, strategy: 'Strategy') -> '[State, ...]':
+
         print('Starting search with strategy {}.'.format(strategy), file=sys.stderr, flush=True)
-        strategy.add_to_frontier(self.initial_state)
+        print(self.initial_state.agent_row, self.initial_state.agent_col, file=sys.stderr, flush=True)
         
+        strategy.add_to_frontier(self.initial_state)
+    
         iterations = 0
         while True:
+
             if iterations == 1000:
                 print(strategy.search_status(), file=sys.stderr, flush=True)
                 iterations = 0
@@ -87,7 +93,8 @@ class SearchClient:
             
             leaf = strategy.get_and_remove_leaf()
             
-            if leaf.is_goal_state():
+            
+            if leaf.is_goal_state(self.goals):
                 return leaf.extract_plan()
             
             strategy.add_to_explored(leaf)
