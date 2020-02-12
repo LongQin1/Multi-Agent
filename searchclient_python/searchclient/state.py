@@ -24,23 +24,23 @@ class State:
         
         Note: The state should be considered immutable after it has been hashed, e.g. added to a dictionary!
         '''
-        print("in init state", file=sys.stderr, flush=True)
+        #print("in init state", file=sys.stderr, flush=True)
         self._hash = None
         self.MAX_ROW = row
         self.MAX_COL = col
-        print("max row/col has been set", file=sys.stderr, flush=True)
+        #print("max row/col has been set", file=sys.stderr, flush=True)
         if copy is None:
-            print("this is an inital st", file=sys.stderr, flush=True)
+            #print("this is an inital st", file=sys.stderr, flush=True)
             self.agent_row = None
             self.agent_col = None
             
-            print("agent is set", file=sys.stderr, flush=True)
+            #print("agent is set", file=sys.stderr, flush=True)
             
-            print("MAX COL",self.MAX_COL, file=sys.stderr, flush=True)
-            print("MAX ROW",self.MAX_ROW, file=sys.stderr, flush=True)
+            #print("MAX COL",self.MAX_COL, file=sys.stderr, flush=True)
+            #print("MAX ROW",self.MAX_ROW, file=sys.stderr, flush=True)
             self.boxes = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
-            self.goals = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
-            print("made boxes and goals", file=sys.stderr, flush=True)
+            #self.goals = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
+            #print("made boxes and goals", file=sys.stderr, flush=True)
             
             self.parent = None
             self.action = None
@@ -51,7 +51,7 @@ class State:
             self.agent_col = copy.agent_col
             
             self.boxes = [row[:] for row in copy.boxes]
-            self.goals = [row[:] for row in copy.goals]
+            #self.goals = [row[:] for row in copy.goals]
             
             self.parent = copy.parent
             self.action = copy.action
@@ -114,10 +114,10 @@ class State:
     def is_initial_state(self) -> 'bool':
         return self.parent is None
     
-    def is_goal_state(self) -> 'bool':
+    def is_goal_state(self,goals) -> 'bool':
         for row in range(self.MAX_ROW):
             for col in range(self.MAX_COL):
-                goal = self.goals[row][col]
+                goal = goals[row][col]
                 box = self.boxes[row][col]
                 if goal is not None and (box is None or goal != box.lower()):
                     return False
@@ -145,7 +145,7 @@ class State:
             _hash = _hash * prime + self.agent_row
             _hash = _hash * prime + self.agent_col
             _hash = _hash * prime + hash(tuple(tuple(row) for row in self.boxes))
-            _hash = _hash * prime + hash(tuple(tuple(row) for row in self.goals))
+           # _hash = _hash * prime + hash(tuple(tuple(row) for row in self.goals))
             self._hash = _hash
         return self._hash
     
@@ -155,7 +155,7 @@ class State:
         if self.agent_row != other.agent_row: return False
         if self.agent_col != other.agent_col: return False
         if self.boxes != other.boxes: return False
-        if self.goals != other.goals: return False
+        #if self.goals != other.goals: return False
         return True
     
     def __repr__(self):
@@ -164,7 +164,7 @@ class State:
             line = []
             for col in range(State.MAX_COL):
                 if self.boxes[row][col] is not None: line.append(self.boxes[row][col])
-                elif self.goals[row][col] is not None: line.append(self.goals[row][col])
+              # elif self.goals[row][col] is not None: line.append(self.goals[row][col])
                 elif self.agent_row == row and self.agent_col == col: line.append('0')
                 else: line.append(' ')
             lines.append(''.join(line))

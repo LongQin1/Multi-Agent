@@ -31,6 +31,7 @@ class SearchClient:
             
             # set walls before intialize states
             self.walls=[[False for _ in range(col+1)] for _ in range(row)] #as it is in original state
+            self.goals = [[None for _ in range(col+1)] for _ in range(row)]
 
             # Read lines for level.
             self.initial_state = State(row,col+1)
@@ -51,7 +52,7 @@ class SearchClient:
                         self.initial_state.agent_col = col
 
                     elif char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ": self.initial_state.boxes[row][col] = char
-                    elif char in "abcdefghijklmnopqrstuvwxyz": self.initial_state.goals[row][col] = char
+                    elif char in "abcdefghijklmnopqrstuvwxyz": self.goals[row][col] = char
                     elif char == ' ':
                         # Free cell.
                         pass
@@ -59,7 +60,7 @@ class SearchClient:
                         print('Error, read invalid level character: {}'.format(char), file=sys.stderr, flush=True)
                         sys.exit(1)
                 row += 1
-                print(self.walls, file=sys.stderr, flush=True)
+                #print(self.walls, file=sys.stderr, flush=True)
 
             # after while before except we gonna intialized the table(max_col and max_row) here
             # also save the state walls and goals here.
@@ -93,7 +94,7 @@ class SearchClient:
             leaf = strategy.get_and_remove_leaf()
             
             
-            if leaf.is_goal_state():
+            if leaf.is_goal_state(self.goals):
                 return leaf.extract_plan()
             
             strategy.add_to_explored(leaf)
