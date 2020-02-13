@@ -17,24 +17,25 @@ class SearchClient:
             line = server_messages.readline().rstrip()
             line_list = []
             row=0
+            column = 0
             while line:
                 line_list.append(line)
                 line = server_messages.readline().rstrip()
 
                 for col, char in enumerate(line):
                    pass
-
+                if col > column:
+                    column = col
                 row+=1
             if colors_re.fullmatch(line) is not None:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
                 sys.exit(1)
-            
             # set walls before intialize states
-            self.walls=[[False for _ in range(col+1)] for _ in range(row)] #as it is in original state
-            self.goals = [[None for _ in range(col+1)] for _ in range(row)]
+            self.walls=[[False for _ in range(column+1)] for _ in range(row)] #as it is in original state
+            self.goals = [[None for _ in range(column+1)] for _ in range(row)]
 
             # Read lines for level.
-            self.initial_state = State(row,col+1)
+            self.initial_state = State(row,column+1)
             print("inital state is made", file=sys.stderr, flush=True)
             
             row = 0
@@ -64,17 +65,14 @@ class SearchClient:
 
             # after while before except we gonna intialized the table(max_col and max_row) here
             # also save the state walls and goals here.
-             
- 
+
         except Exception as ex:
             print('Error parsing level: {}.'.format(repr(ex)), file=sys.stderr, flush=True)
             sys.exit(1)
     
     def search(self, strategy: 'Strategy') -> '[State, ...]':
-
         print('Starting search with strategy {}.'.format(strategy), file=sys.stderr, flush=True)
-        print(self.initial_state.agent_row, self.initial_state.agent_col, file=sys.stderr, flush=True)
-        
+
         strategy.add_to_frontier(self.initial_state)
     
         iterations = 0
@@ -113,7 +111,7 @@ def main(strategy_str: 'str'):
     print('SearchClient initializing. I am sending this using the error output stream.', file=sys.stderr, flush=True)
     
     # Read level and create the initial state of the problem.
-    client = SearchClient(server_messages);
+    client = SearchClient(server_messages)
 
     strategy = None
     if strategy_str == 'bfs':
@@ -147,7 +145,6 @@ def main(strategy_str: 'str'):
             if 'false' in response:
                 print('Server responsed with "{}" to the action "{}" applied in:\n{}\n'.format(response, state.action, state), file=sys.stderr, flush=True)
                 break
-
 
 if __name__ == '__main__':
     # Program arguments.

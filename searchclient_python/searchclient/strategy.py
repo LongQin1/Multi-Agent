@@ -77,8 +77,7 @@ class StrategyDFS(Strategy):
         super().__init__()
         self.frontier = deque()
         self.frontier_set = set()
-        
-    
+
     def get_and_remove_leaf(self) -> 'State':
         leaf = self.frontier.pop()
         self.frontier_set.remove(leaf)
@@ -87,8 +86,7 @@ class StrategyDFS(Strategy):
     def add_to_frontier(self, state: 'State'):
         self.frontier.append(state)
         self.frontier_set.add(state)
-        print("through", )
-    
+
     def in_frontier(self, state: 'State') -> 'bool':
         return state in self.frontier_set
     
@@ -100,7 +98,6 @@ class StrategyDFS(Strategy):
     
     def __repr__(self):
         return 'Depth-first Search'
-
 
 class StrategyBestFirst(Strategy):
     def __init__(self, heuristic: 'Heuristic'):
