@@ -17,15 +17,19 @@ class SearchClient:
             line = server_messages.readline().rstrip()
             line_list = []
             row=0
+
             column = 0
+
             while line:
                 line_list.append(line)
                 line = server_messages.readline().rstrip()
 
                 for col, char in enumerate(line):
                    pass
-                if col > column:
-                    column = col
+
+                if col>column:
+                    column=col
+
                 row+=1
             if colors_re.fullmatch(line) is not None:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
@@ -42,7 +46,7 @@ class SearchClient:
 
             for line in line_list:
                 for col, char in enumerate(line):
-                    if char == '+':
+                    if char == "+":
                         self.walls[row][col] = True
 
                     elif char in "0123456789":
@@ -119,11 +123,11 @@ def main(strategy_str: 'str'):
     elif strategy_str == 'dfs':
         strategy = StrategyDFS()
     elif strategy_str == 'astar':
-        strategy = StrategyBestFirst(AStar(client.initial_state))
+        strategy = StrategyBestFirst(AStar(client.initial_state,self.goals))
     elif strategy_str == 'wastar':
-        strategy = StrategyBestFirst(WAStar(client.initial_state, 5))
+        strategy = StrategyBestFirst(WAStar(client.initial_state, 5,self.goals))
     elif strategy_str == 'greedy':
-        strategy = StrategyBestFirst(Greedy(client.initial_state))
+        strategy = StrategyBestFirst(Greedy(client.initial_state,self.goals))
     else:
         # Default to BFS strategy.
         strategy = StrategyBFS()
@@ -141,7 +145,9 @@ def main(strategy_str: 'str'):
         
         for state in solution:
             print(state.action, flush=True)
+            print('before response', file=sys.stderr, flush=True)
             response = server_messages.readline().rstrip()
+            print('after response', file=sys.stderr, flush=True)
             if 'false' in response:
                 print('Server responsed with "{}" to the action "{}" applied in:\n{}\n'.format(response, state.action, state), file=sys.stderr, flush=True)
                 break
