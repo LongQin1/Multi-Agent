@@ -57,7 +57,6 @@ class State:
             self.action = copy.action
             
             self.g = copy.g
-        print(self.MAX_ROW, self.MAX_COL, file=sys.stderr, flush=True)
 
     def get_children(self,walls) -> '[State, ...]':
         '''
@@ -160,13 +159,12 @@ class State:
     
     def __repr__(self):
         lines = []
-        for row in range(State.MAX_ROW):
+        for row in range(self.MAX_ROW):
             line = []
-            for col in range(State.MAX_COL):
+            for col in range(self.MAX_COL):
                 if self.boxes[row][col] is not None: line.append(self.boxes[row][col])
               # elif self.goals[row][col] is not None: line.append(self.goals[row][col])
                 elif self.agent_row == row and self.agent_col == col: line.append('0')
                 else: line.append(' ')
             lines.append(''.join(line))
         return '\n'.join(lines)
-
