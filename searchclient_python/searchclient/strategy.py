@@ -3,6 +3,7 @@ from collections import deque
 from time import perf_counter
 import sys
 import memory
+import queue as queue
 
 
 class Strategy(metaclass=ABCMeta):
@@ -77,6 +78,7 @@ class StrategyDFS(Strategy):
         super().__init__()
         self.frontier = deque()
         self.frontier_set = set()
+    
 
     def get_and_remove_leaf(self) -> 'State':
         leaf = self.frontier.pop()
@@ -86,7 +88,8 @@ class StrategyDFS(Strategy):
     def add_to_frontier(self, state: 'State'):
         self.frontier.append(state)
         self.frontier_set.add(state)
-
+        print("through", )
+    
     def in_frontier(self, state: 'State') -> 'bool':
         return state in self.frontier_set
     
@@ -103,22 +106,26 @@ class StrategyBestFirst(Strategy):
     def __init__(self, heuristic: 'Heuristic'):
         super().__init__()
         self.heuristic = heuristic
-        raise NotImplementedError
+        self.frontier = queue.PriorityQueue()
+        self.frontier_set = set()
     
     def get_and_remove_leaf(self) -> 'State':
-        raise NotImplementedError
+        leaf = self.frontier.get()
+        self.frontier_set.remove(leaf)
+        return leaf
     
     def add_to_frontier(self, state: 'State'):
-        raise NotImplementedError
+        self.frontier.put(self.heuristic(state),state)
+        self.frontier_set.add(state)
     
     def in_frontier(self, state: 'State') -> 'bool':
-        raise NotImplementedError
+        return state in self.frontier_set
     
     def frontier_count(self) -> 'int':
-        raise NotImplementedError
+        return self.frontier.qsize()
     
     def frontier_empty(self) -> 'bool':
-        raise NotImplementedError
+        return self.frontier.empty()
     
     def __repr__(self):
         return 'Best-first Search using {}'.format(self.heuristic)

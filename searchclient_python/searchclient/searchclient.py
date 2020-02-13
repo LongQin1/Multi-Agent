@@ -17,14 +17,19 @@ class SearchClient:
             line = server_messages.readline().rstrip()
             line_list = []
             row=0
+
             column = 0
+
             while line:
                 line_list.append(line)
                 line = server_messages.readline().rstrip()
 
                 for col, char in enumerate(line):
                    pass
-                if col > column:
+
+                if col>column:
+                    column=col
+
                 row+=1
             if colors_re.fullmatch(line) is not None:
                 print('Error, client does not support colors.', file=sys.stderr, flush=True)
@@ -118,11 +123,11 @@ def main(strategy_str: 'str'):
     elif strategy_str == 'dfs':
         strategy = StrategyDFS()
     elif strategy_str == 'astar':
-        strategy = StrategyBestFirst(AStar(client.initial_state))
+        strategy = StrategyBestFirst(AStar(client.initial_state,self.goals))
     elif strategy_str == 'wastar':
-        strategy = StrategyBestFirst(WAStar(client.initial_state, 5))
+        strategy = StrategyBestFirst(WAStar(client.initial_state, 5,self.goals))
     elif strategy_str == 'greedy':
-        strategy = StrategyBestFirst(Greedy(client.initial_state))
+        strategy = StrategyBestFirst(Greedy(client.initial_state,self.goals))
     else:
         # Default to BFS strategy.
         strategy = StrategyBFS()
