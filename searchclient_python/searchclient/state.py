@@ -57,7 +57,7 @@ class State:
             self.action = copy.action
             
             self.g = copy.g
-        print(self.MAX_ROW, self.MAX_COL, file=sys.stderr, flush=True)
+        #print(self.MAX_ROW, self.MAX_COL, file=sys.stderr, flush=True)
 
     def get_children(self,walls) -> '[State, ...]':
         '''

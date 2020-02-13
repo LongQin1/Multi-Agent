@@ -123,11 +123,11 @@ def main(strategy_str: 'str'):
     elif strategy_str == 'dfs':
         strategy = StrategyDFS()
     elif strategy_str == 'astar':
-        strategy = StrategyBestFirst(AStar(client.initial_state))
+        strategy = StrategyBestFirst(AStar(client.initial_state,self.goals))
     elif strategy_str == 'wastar':
-        strategy = StrategyBestFirst(WAStar(client.initial_state, 5))
+        strategy = StrategyBestFirst(WAStar(client.initial_state, 5,self.goals))
     elif strategy_str == 'greedy':
-        strategy = StrategyBestFirst(Greedy(client.initial_state))
+        strategy = StrategyBestFirst(Greedy(client.initial_state,self.goals))
     else:
         # Default to BFS strategy.
         strategy = StrategyBFS()
