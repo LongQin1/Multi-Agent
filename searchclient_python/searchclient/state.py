@@ -5,6 +5,8 @@ from action import ALL_ACTIONS, ActionType
 
 class State:
     _RNG = random.Random(1)
+    MAX_ROW=0
+    MAX_COL=0
 
     def __init__(self,row,col, copy: 'State' = None):
         #r: 'int', c:'int',
@@ -26,21 +28,15 @@ class State:
         '''
         #print("in init state", file=sys.stderr, flush=True)
         self._hash = None
-        self.MAX_ROW = row
-        self.MAX_COL = col
+        State.MAX_ROW = row
+        State.MAX_COL = col
         #print("max row/col has been set", file=sys.stderr, flush=True)
         if copy is None:
             #print("this is an inital st", file=sys.stderr, flush=True)
             self.agent_row = None
             self.agent_col = None
-            
-            #print("agent is set", file=sys.stderr, flush=True)
-            
-            #print("MAX COL",self.MAX_COL, file=sys.stderr, flush=True)
-            #print("MAX ROW",self.MAX_ROW, file=sys.stderr, flush=True)
-            self.boxes = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
-            #self.goals = [[None for _ in range(self.MAX_COL)] for _ in range(self.MAX_ROW)]
-            #print("made boxes and goals", file=sys.stderr, flush=True)
+
+            self.boxes = [[None for _ in range(State.MAX_COL)] for _ in range(State.MAX_ROW)]
             
             self.parent = None
             self.action = None
@@ -71,7 +67,7 @@ class State:
             
             if action.action_type is ActionType.Move:
                 if self.is_free(walls,new_agent_row, new_agent_col):
-                    child = State(self.MAX_ROW,self.MAX_COL,self)
+                    child = State(State.MAX_ROW,State.MAX_COL,self)
                     child.agent_row = new_agent_row
                     child.agent_col = new_agent_col
                     child.parent = self
@@ -83,7 +79,7 @@ class State:
                     new_box_row = new_agent_row + action.box_dir.d_row
                     new_box_col = new_agent_col + action.box_dir.d_col
                     if self.is_free(walls,new_box_row, new_box_col):
-                        child = State(self.MAX_ROW,self.MAX_COL,self)
+                        child = State(State.MAX_ROW,State.MAX_COL,self)
                         child.agent_row = new_agent_row
                         child.agent_col = new_agent_col
                         child.boxes[new_box_row][new_box_col] = self.boxes[new_agent_row][new_agent_col]
@@ -97,7 +93,7 @@ class State:
                     box_row = self.agent_row + action.box_dir.d_row
                     box_col = self.agent_col + action.box_dir.d_col
                     if self.box_at(box_row, box_col):
-                        child = State(self.MAX_ROW,self.MAX_COL,self)
+                        child = State(State.MAX_ROW,State.MAX_COL,self)
                         child.agent_row = new_agent_row
                         child.agent_col = new_agent_col
                         child.boxes[self.agent_row][self.agent_col] = self.boxes[box_row][box_col]
@@ -114,8 +110,8 @@ class State:
         return self.parent is None
     
     def is_goal_state(self,goals) -> 'bool':
-        for row in range(self.MAX_ROW):
-            for col in range(self.MAX_COL):
+        for row in range(State.MAX_ROW):
+            for col in range(State.MAX_COL):
                 goal = goals[row][col]
                 box = self.boxes[row][col]
                 if goal is not None and (box is None or goal != box.lower()):

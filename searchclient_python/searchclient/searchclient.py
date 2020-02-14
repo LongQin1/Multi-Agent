@@ -65,11 +65,8 @@ class SearchClient:
                         print('Error, read invalid level character: {}'.format(char), file=sys.stderr, flush=True)
                         sys.exit(1)
                 row += 1
-                #print(self.walls, file=sys.stderr, flush=True)
-
-            # after while before except we gonna intialized the table(max_col and max_row) here
-            # also save the state walls and goals here.
-
+             
+ 
         except Exception as ex:
             print('Error parsing level: {}.'.format(repr(ex)), file=sys.stderr, flush=True)
             sys.exit(1)
