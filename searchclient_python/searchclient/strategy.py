@@ -110,14 +110,14 @@ class StrategyBestFirst(Strategy):
         self.frontier_set = set()
     
     def get_and_remove_leaf(self) -> 'State':
-        print(self.frontier, file=sys.stderr, flush=True)
-        leaf = self.frontier.get()
-        print(leaf, file=sys.stderr, flush=True)
+        leaf = self.frontier.get()[1] #returns only the state object
         self.frontier_set.remove(leaf)
         return leaf
     
     def add_to_frontier(self, state: 'State'):
-        self.frontier.put(self.heuristic.h(state),state)
+        print("state: ",state, file=sys.stderr, flush=True)
+        print("heuristic: ",self.heuristic.h(state), file=sys.stderr, flush=True)
+        self.frontier.put((self.heuristic.h(state),state))
         self.frontier_set.add(state)
     
     def in_frontier(self, state: 'State') -> 'bool':

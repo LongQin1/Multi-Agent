@@ -140,7 +140,6 @@ class State:
             _hash = _hash * prime + self.agent_row
             _hash = _hash * prime + self.agent_col
             _hash = _hash * prime + hash(tuple(tuple(row) for row in self.boxes))
-           # _hash = _hash * prime + hash(tuple(tuple(row) for row in self.goals))
             self._hash = _hash
         return self._hash
     
@@ -150,8 +149,10 @@ class State:
         if self.agent_row != other.agent_row: return False
         if self.agent_col != other.agent_col: return False
         if self.boxes != other.boxes: return False
-        #if self.goals != other.goals: return False
         return True
+    
+    def __gt__(self, other): #defined for the comaprison need for the priority queue.
+        return True 
     
     def __repr__(self):
         lines = []
@@ -159,7 +160,6 @@ class State:
             line = []
             for col in range(self.MAX_COL):
                 if self.boxes[row][col] is not None: line.append(self.boxes[row][col])
-              # elif self.goals[row][col] is not None: line.append(self.goals[row][col])
                 elif self.agent_row == row and self.agent_col == col: line.append('0')
                 else: line.append(' ')
             lines.append(''.join(line))
