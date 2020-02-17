@@ -115,8 +115,7 @@ class StrategyBestFirst(Strategy):
         return leaf
     
     def add_to_frontier(self, state: 'State'):
-        print("state: ",state, file=sys.stderr, flush=True)
-        print("heuristic: ",self.heuristic.h(state), file=sys.stderr, flush=True)
+        print("heuristic: ", self.heuristic.h(state), file=sys.stderr, flush=True)
         self.frontier.put((self.heuristic.h(state),state))
         self.frontier_set.add(state)
     

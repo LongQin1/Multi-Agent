@@ -65,8 +65,7 @@ class SearchClient:
                         print('Error, read invalid level character: {}'.format(char), file=sys.stderr, flush=True)
                         sys.exit(1)
                 row += 1
-             
- 
+
         except Exception as ex:
             print('Error parsing level: {}.'.format(repr(ex)), file=sys.stderr, flush=True)
             sys.exit(1)
@@ -75,7 +74,7 @@ class SearchClient:
         print('Starting search with strategy {}.'.format(strategy), file=sys.stderr, flush=True)
 
         strategy.add_to_frontier(self.initial_state)
-    
+
         iterations = 0
         while True:
 
@@ -91,8 +90,7 @@ class SearchClient:
                 return None
             
             leaf = strategy.get_and_remove_leaf()
-            
-            
+
             if leaf.is_goal_state(self.goals):
                 return leaf.extract_plan()
             
@@ -142,9 +140,7 @@ def main(strategy_str: 'str'):
         
         for state in solution:
             print(state.action, flush=True)
-            print('before response', file=sys.stderr, flush=True)
             response = server_messages.readline().rstrip()
-            print('after response', file=sys.stderr, flush=True)
             if 'false' in response:
                 print('Server responsed with "{}" to the action "{}" applied in:\n{}\n'.format(response, state.action, state), file=sys.stderr, flush=True)
                 break
@@ -152,8 +148,7 @@ def main(strategy_str: 'str'):
 if __name__ == '__main__':
     # Program arguments.
     parser = argparse.ArgumentParser(description='Simple client based on state-space graph search.')
-    parser.add_argument('--max-memory', metavar='<MB>', type=float, default=2048.0, help='The maximum memory usage allowed in MB (soft limit, default 2048).')
-    
+    parser.add_argument('--max-memory', metavar='<MB>', type=float, default=4100.0, help='The maximum memory usage allowed in MB (soft limit, default 2048).')
     strategy_group = parser.add_mutually_exclusive_group()
     strategy_group.add_argument('-bfs', action='store_const', dest='strategy', const='bfs', help='Use the BFS strategy.')
     strategy_group.add_argument('-dfs', action='store_const', dest='strategy', const='dfs', help='Use the DFS strategy.')
