@@ -9,7 +9,7 @@ class State:
     MAX_COL=0
 
     def __init__(self,row,col, copy: 'State' = None):
-        #r: 'int', c:'int',
+       
         '''
         If copy is None: Creates an empty State.
         If copy is not None: Creates a copy of the copy state.
@@ -26,13 +26,11 @@ class State:
         
         Note: The state should be considered immutable after it has been hashed, e.g. added to a dictionary!
         '''
-        #print("in init state", file=sys.stderr, flush=True)
+        
         self._hash = None
         State.MAX_ROW = row
         State.MAX_COL = col
-        #print("max row/col has been set", file=sys.stderr, flush=True)
         if copy is None:
-            #print("this is an inital st", file=sys.stderr, flush=True)
             self.agent_row = None
             self.agent_col = None
 

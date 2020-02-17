@@ -3,6 +3,7 @@ from state import State
 import math
 from collections import deque
 import sys
+import random
 
 
 class Heuristic(metaclass=ABCMeta):
@@ -10,7 +11,6 @@ class Heuristic(metaclass=ABCMeta):
         self.goals = goals
     
     def is_there_immediate_neighbour(self,state,goal, row, col):
-        #print(sys.getrecursionlimit(), file=sys.stderr, flush=True)
         sys.setrecursionlimit(100000)
         if row+1 < State.MAX_ROW: #we are still on the board
             box_test= state.boxes[row+1][col]
@@ -39,7 +39,6 @@ class Heuristic(metaclass=ABCMeta):
         row = p[0]
         col = p[1]
         if self.is_there_immediate_neighbour(state,goal,row,col):
-            print("d number:",math.sqrt((goal_row-row)**2+(goal_col-col)**2), file=sys.stderr, flush=True)
             return math.sqrt((goal_row-row)**2+(goal_col-col)**2)
              
         else:
@@ -51,16 +50,16 @@ class Heuristic(metaclass=ABCMeta):
                 queue.append([row,col+1])
             if col-1 >= 0:
                 queue.append([row,col-1])
-        return   self.GetDistance(state,goal,queue,goal_row,goal_col)
+            return   self.GetDistance(state,goal,queue,goal_row,goal_col)
 
     def agent_to_distance(self,state,r,c):
         a_row = state.agent_row
         a_col = state.agent_col
         dist = math.hypot(a_col - c, a_row - r)
-        print(dist, file=sys.stderr, flush=True)
         return dist
 
     def h(self, state: 'State') -> 'int':
+  
         r=0
         for row in range(State.MAX_ROW):
             for col in range(State.MAX_COL):
@@ -68,22 +67,17 @@ class Heuristic(metaclass=ABCMeta):
                 box = state.boxes[row][col]
                 if goal is not None:
                     if box is not None and goal == box.lower():
-                        r -= 10000   # We might want to increase the weight of these
+                        r -= 10   # We might want to increase the weight of these
                     else:  # in goal but with no matching box.
                         queue = deque()
                         queue.append([row,col])
-                        print("goal:  ", goal, file=sys.stderr, flush=True)
-                        print("queue:  ", queue, file=sys.stderr, flush=True)
-                        print("row:  ", row, file=sys.stderr, flush=True)
-                        print("col:  ", col, file=sys.stderr, flush=True)
-                        print("agent:  {},{}".format(state.agent_row, state.agent_col), file=sys.stderr, flush=True)
                         d = self.agent_to_distance(state,row,col)
-                        d2 = self.GetDistance(state,goal,queue,row,col)
-                      #  print("return of get distance: ",d2, file=sys.stderr, flush=True)
-                        r =r + d2
                         r = r + d
-                      #  print("R:  ", r, file=sys.stderr, flush=True)
+                        # Uncomment the two lines below will add the distance of goal to nearest box as a weight parameter 
 
+                        # d2 = self.GetDistance(state,goal,queue,row,col)
+                        # r =r + d2
+                        
         return r                                
     
     @abstractmethod
