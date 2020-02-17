@@ -10,6 +10,8 @@ class Heuristic(metaclass=ABCMeta):
         self.goals = goals
     
     def is_there_immediate_neighbour(self,state,goal, row, col):
+        #print(sys.getrecursionlimit(), file=sys.stderr, flush=True)
+        sys.setrecursionlimit(100000)
         if row+1 < State.MAX_ROW: #we are still on the board
             box_test= state.boxes[row+1][col]
             goal_test= self.goals[row+1][col]
@@ -66,21 +68,21 @@ class Heuristic(metaclass=ABCMeta):
                 box = state.boxes[row][col]
                 if goal is not None:
                     if box is not None and goal == box.lower():
-                        r -= 5   # We might want to increase the weight of these
+                        r -= 10000   # We might want to increase the weight of these
                     else:  # in goal but with no matching box.
                         queue = deque()
                         queue.append([row,col])
-                      #  print("goal:  ", goal, file=sys.stderr, flush=True)
-                      #  print("queue:  ", queue, file=sys.stderr, flush=True)
-                      #  print("row:  ", row, file=sys.stderr, flush=True)
-                      #  print("col:  ", col, file=sys.stderr, flush=True)
-                      #  print("agent:  {},{}".format(state.agent_row, state.agent_col), file=sys.stderr, flush=True)
+                        print("goal:  ", goal, file=sys.stderr, flush=True)
+                        print("queue:  ", queue, file=sys.stderr, flush=True)
+                        print("row:  ", row, file=sys.stderr, flush=True)
+                        print("col:  ", col, file=sys.stderr, flush=True)
+                        print("agent:  {},{}".format(state.agent_row, state.agent_col), file=sys.stderr, flush=True)
                         d = self.agent_to_distance(state,row,col)
                         d2 = self.GetDistance(state,goal,queue,row,col)
-                        print("return of get distance: ",d2, file=sys.stderr, flush=True)
+                      #  print("return of get distance: ",d2, file=sys.stderr, flush=True)
                         r =r + d2
                         r = r + d
-                        print("R:  ", r, file=sys.stderr, flush=True)
+                      #  print("R:  ", r, file=sys.stderr, flush=True)
 
         return r                                
     
